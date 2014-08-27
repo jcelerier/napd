@@ -1,12 +1,12 @@
 #include <QCoreApplication>
 
-#include "MainThread.h"
+#include "NapDaemon.h"
 
 int main(int argc, char** argv)
 {
 	QCoreApplication app(argc, argv);
 	
-	MainThread t{&app};
+	NapDaemon t{&app};
 	
 	return app.exec();
 }

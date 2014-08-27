@@ -4,11 +4,11 @@
 #include "PowerManager.h"
 #include "Setup.h"
 
-class MainThread: public QObject
+class NapDaemon: public QObject
 {
 		Q_OBJECT
 	public:
-		MainThread(QObject* parent);
+		NapDaemon(QObject* parent);
 
 	public slots:
 		void performChecks();
@@ -16,6 +16,6 @@ class MainThread: public QObject
 	private:
 		Settings settings;
 		PowerManager power;
-		QTimer* timer{new QTimer(nullptr)};
+		QTimer timer{nullptr};
 };
 

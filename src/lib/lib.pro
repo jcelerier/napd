@@ -16,17 +16,16 @@ SOURCES += \
     CheckedProcesses.cpp \
     Setup.cpp \
     CustomChecks.cpp \
-    MainThread.cpp \
     CheckedUnits.cpp \
     PowerManager.cpp \
-    ProcessHandler.cpp
+    ProcessHandler.cpp \
+    NapDaemon.cpp
 
 HEADERS +=\
     CheckedProcesses.h \
     Setup.h \
     Settings.h \
     CustomChecks.h \
-    MainThread.h \
     checkable/Checkable.h \
     checkable/Process.h \
     checkable/CustomCheck.h \
@@ -35,7 +34,8 @@ HEADERS +=\
     CheckedUnits.h \
     PowerManager.h \
     ProcessHandler.h \
-    NotReadyException.h
+    NotReadyException.h \
+    NapDaemon.h
 
 unix {
     target.path = /usr/lib

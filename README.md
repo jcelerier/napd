@@ -3,4 +3,4 @@ napd
 
 A C++ nap daemon
 
-See the wiki
+See the Wiki : https://github.com/jcelerier/napd/wiki

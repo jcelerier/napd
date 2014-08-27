@@ -1,4 +1,5 @@
 #include "CheckedUnits.h"
+#include "NotReadyException.h"
 
 bool CheckedUnits::check()
 {
@@ -18,6 +19,10 @@ bool CheckedUnits::check()
 						  "org.freedesktop.systemd1.Unit", 
 						  QDBusConnection::systemBus()};
 		
-		return in.property("SubState").toString() == "Running";
+		bool val = in.property("SubState").toString() == "Running";
+		if(val)
+			throw NotReady(unit.timeout);
+		
+		return val;
 	});
 }

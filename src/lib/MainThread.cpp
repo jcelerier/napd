@@ -1,21 +1,33 @@
 #include "MainThread.h"
+#include "NotReadyException.h"
+
+MainThread::MainThread(QObject* parent):
+	QObject(parent)
+{
+	Setup{settings};
+	
+	connect(timer, &QTimer::timeout, 
+			this, &MainThread::performChecks);
+	
+	timer->start(settings.defaultTimeout * 1000);
+}
 
 void MainThread::performChecks()
 {
-	if(settings.checkedProcesses.check() && 
-	   settings.checkedUnits.check() &&
-	   settings.customChecks.check())
+	try
 	{
-		power.sleep();
-	}
-}
+		bool ready2go = settings.checkedProcesses.check() && 
+						settings.checkedUnits.check() &&
+						settings.customChecks.check();
 
-void MainThread::run()
-{
-	QTimer t(this);
-	connect(&t, SIGNAL(timeout()), this, SLOT(performChecks()));
-	
-	t.start(60000);
-	
-	exec();	
+		if(ready2go)
+		 {
+			 timer->start(settings.defaultTimeout * 1000);
+			 power.suspend();
+		 }
+	}
+	catch(NotReady& e)
+	{
+		timer->start(e.timeout * 1000);
+	}
 }

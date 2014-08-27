@@ -1,27 +1,21 @@
 #pragma once
-#include <QThread>
 #include <QTimer>
 
 #include "PowerManager.h"
-#include "Settings.h"
+#include "Setup.h"
 
-class MainThread: public QThread
+class MainThread: public QObject
 {
 		Q_OBJECT
 	public:
-		MainThread(QObject* parent):
-			QThread(parent)
-		{
-			
-		}
+		MainThread(QObject* parent);
 
-		Settings settings;
-		PowerManager power;
-		
 	public slots:
 		void performChecks();
 		
-	protected:
-		virtual void run();
+	private:
+		Settings settings;
+		PowerManager power;
+		QTimer* timer{new QTimer(nullptr)};
 };
 

@@ -1,0 +1,8 @@
+[Unit]
+Description=napd auto-sleep daemon
+
+[Service]
+ExecStart=/usr/bin/napd
+
+[Install]
+WantedBy=multi-user.target

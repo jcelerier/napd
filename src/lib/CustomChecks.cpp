@@ -1,6 +1,7 @@
 #include "CustomChecks.h"
-#include <QProcess>
+#include "ProcessHandler.h"
 #include <algorithm>
+#include "NotReadyException.h"
 
 bool CustomChecks::check()
 {	
@@ -8,13 +9,18 @@ bool CustomChecks::check()
 						 std::end(elements),
 						 [] (CustomCheck& check)
 	{
-		QProcess p;
+		ProcessHandler p(check.user);
 		p.setProgram("bash");
 		p.setArguments({"-c", QString("'%1'").arg(QString::fromStdString(check.exec))});
-
+		
 		p.start();
 		p.waitForStarted();
 		p.waitForFinished();
+		
+		bool val = p.exitCode() == check.mustEqual;
+		
+		if(!val)
+			throw NotReady(check.timeout);
 		
 		return p.exitCode() == check.mustEqual;
 	});

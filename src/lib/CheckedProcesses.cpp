@@ -8,6 +8,7 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include "NotReadyException.h"
 
 //TODO redo this with qt
 pid_t proc_find(const char* name) 
@@ -59,7 +60,10 @@ bool CheckedProcesses::check()
 						std::end(elements),
 						[] (Process& proc) 
 	{ 
-		return proc_find(proc.name.c_str()) == -1; 
+		bool val = proc_find(proc.name.c_str()) == -1;
+		
+		if(!val) throw NotReady(proc.timeout);
+		return val; 
 	});
 }
 

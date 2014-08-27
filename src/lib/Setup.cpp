@@ -22,11 +22,22 @@ void Setup::readProcesses(Settings& s)
 	for(QFileInfo& file : dir.entryInfoList())
 	{
 		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
-		auto name = set.value("Process/ProcessName").toString().toStdString();
-		uint32_t timeout = 0;
+		std::string name; 
+		uint32_t timeout = s.defaultTimeout;
 		
+		// Mandatory
+		if(set.contains("Process/ProcessName"))
+			name = set.value("Process/ProcessName").toString().toStdString();
+		else
+		{
+			qWarning() << "Invalid process file : " << file.absoluteFilePath();
+			continue;
+		}
+		
+		// Facultative
 		if(set.contains("Process/Timeout"))
 			timeout = set.value("Process/Timeout").toUInt();
+		
 		
 		s.checkedProcesses.add(Process(name, timeout));
 	}
@@ -40,11 +51,22 @@ void Setup::readUnits(Settings& s)
 	for(QFileInfo& file : dir.entryInfoList())
 	{
 		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
-		auto name = set.value("Unit/UnitName").toString().toStdString();
-		uint32_t timeout = 0;
+		uint32_t timeout = s.defaultTimeout;
+		std::string name;
 		
+		// Mandatory
+		if(set.contains("Unit/UnitName"))
+			name = set.value("Unit/UnitName").toString().toStdString();
+		else
+		{
+			qWarning() << "Invalid unit file : " << file.absoluteFilePath();
+			continue;
+		}
+		
+		// Facultative
 		if(set.contains("Unit/Timeout"))
 			timeout = set.value("Unit/Timeout").toUInt();
+		
 		
 		s.checkedUnits.add(Unit(name, timeout));
 	}
@@ -58,17 +80,29 @@ void Setup::readChecks(Settings& s)
 	for(QFileInfo& file : dir.entryInfoList())
 	{
 		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
-		auto exec = set.value("Check/Exec").toString().toStdString();
-		uint32_t timeout = 0;
-		std::string user = "root";
-		int mustEqual = 0;
 		
+		std::string exec;
+		uint32_t timeout = s.defaultTimeout;
+		std::string user = s.defaultUser;
+		int mustEqual = s.defaultReturnCode;
+		
+		// Mandatory
+		if(set.contains("Check/Exec"))
+			exec = set.value("Check/Exec").toString().toStdString();
+		else
+		{
+			qWarning() << "Invalid unit file : " << file.absoluteFilePath();
+			continue;
+		}
+		
+		// Facultative
 		if(set.contains("Check/Timeout"))
 			timeout = set.value("Check/Timeout").toUInt();
 		if(set.contains("Check/MustEqual"))
 			timeout = set.value("Check/MustEqual").toInt();
 		if(set.contains("Check/AsUser"))
 			user = set.value("Check/AsUser").toString().toStdString();
+		
 		
 		s.customChecks.add(CustomCheck(exec, user, mustEqual, timeout));
 	}

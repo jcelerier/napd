@@ -3,7 +3,7 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 QT += core dbus
 SOURCES += main.cpp
-
+TARGET=napd
 
 DESTDIR = $$PWD/../../output
 LIBS += -L$$PWD/../../output -lnapd

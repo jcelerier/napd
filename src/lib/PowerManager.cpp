@@ -9,22 +9,29 @@ PowerManager::PowerManager()
 	
 	if (!iface.isValid()) 
 	{
-		throw std::runtime_error(qPrintable(QDBusConnection::sessionBus().lastError().message()));
+		throw std::runtime_error(qPrintable(QDBusConnection::systemBus().lastError().message()));
 	}
 }
 
-
-void PowerManager::sleep()
+void PowerManager::suspend()
 {
 	QDBusReply<QString> reply = iface.call("CanSuspend");
+	
 	if (reply.isValid()) 
 	{
-		qDebug() << "org.freedesktop.login1.CanSuspend() = " << qPrintable(reply.value());
-		iface.call("Suspend");
-		return;
+		if(reply.value() != "yes") 
+		{
+			qWarning() << "Cannot suspend.";
+			return;
+		}
+		
+		QDBusReply<void> rep = iface.call("Suspend", false);
+		
+		if(!reply.isValid())
+			qWarning() << "Reply error: " << qPrintable(rep.error().message());
 	}
 	else
 	{
-		qDebug() << "Reply error: " << qPrintable(reply.error().message());
+		qWarning() << "Reply error: " << qPrintable(reply.error().message());
 	}
 }

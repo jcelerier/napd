@@ -6,7 +6,7 @@ class PowerManager
 {
 	public:
 		PowerManager();
-		void sleep();
+		void suspend();
 		void poweroff();
 		
 	private:
@@ -14,6 +14,4 @@ class PowerManager
 							 "/org/freedesktop/login1", 
 							 "org.freedesktop.login1.Manager", 
 							 QDBusConnection::systemBus()};
-		
-		
 };

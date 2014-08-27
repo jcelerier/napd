@@ -18,7 +18,8 @@ SOURCES += \
     CustomChecks.cpp \
     MainThread.cpp \
     CheckedUnits.cpp \
-    PowerManager.cpp
+    PowerManager.cpp \
+    ProcessHandler.cpp
 
 HEADERS +=\
     CheckedProcesses.h \
@@ -32,7 +33,9 @@ HEADERS +=\
     collection/Collection.h \
     checkable/Unit.h \
     CheckedUnits.h \
-    PowerManager.h
+    PowerManager.h \
+    ProcessHandler.h \
+    NotReadyException.h
 
 unix {
     target.path = /usr/lib

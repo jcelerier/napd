@@ -7,5 +7,5 @@ struct Checkable
 		{
 		}
 
-		int timeout;
+		int timeout; // in seconds
 };

@@ -66,5 +66,3 @@ bool CheckedProcesses::check()
 		return val; 
 	});
 }
-
-

@@ -4,16 +4,34 @@
 #include <QSettings>
 #include <cinttypes>
 
+#include <sys/types.h>
+#include <pwd.h>
+#include <unistd.h>
+
 using namespace std;
 
 Setup::Setup(Settings& s)
 {
+	readGlobalSettings(s);
 	readProcesses(s);
 	readUnits(s);
 	readChecks(s);
 }
 
-//TODO champ type à la place
+void Setup::readGlobalSettings(Settings& s)
+{
+	QSettings set("/etc/napd/napd.conf");
+	
+	if(set.contains("napd/DefaultTimeout"))
+		s.defaultTimeout = set.value("napd/DefaultTimeout").toUInt();
+	
+	if(set.contains("napd/DefaultUser"))
+		s.defaultUser = set.value("napd/DefaultUser").toString().toStdString();
+	else
+		s.defaultUser = std::string(getpwuid(getuid())->pw_name);
+
+}
+
 void Setup::readProcesses(Settings& s)
 {
 	QDir dir("/etc/napd/processes.d");

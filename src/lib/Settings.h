@@ -15,6 +15,6 @@ struct Settings
 	uint32_t defaultTimeout{60};
 	
 	// Custom checks
-	std::string defaultUser{"root"};
+	std::string defaultUser{};
 	int defaultReturnCode{};
 };

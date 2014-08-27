@@ -8,7 +8,7 @@ class Setup
 		Setup(Settings& s);
 		
 	private:
-		void readGlobalSettings();
+		void readGlobalSettings(Settings& s);
 		void readProcesses(Settings& s);
 		void readUnits(Settings& s);
 		void readChecks(Settings& s);

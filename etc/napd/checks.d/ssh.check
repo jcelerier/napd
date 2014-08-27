@@ -1,0 +1,2 @@
+[Check]
+Exec=/etc/napd/scripts/ssh.sh

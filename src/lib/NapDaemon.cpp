@@ -4,8 +4,6 @@
 NapDaemon::NapDaemon(QObject* parent):
 	QObject(parent)
 {
-	Setup{settings};
-	
 	connect(&timer, &QTimer::timeout, 
 			this, &NapDaemon::performChecks);
 	
@@ -16,9 +14,9 @@ void NapDaemon::performChecks()
 {
 	try
 	{
-		bool ready2go = settings.checkedProcesses.check() && 
-						settings.checkedUnits.check() &&
-						settings.customChecks.check();
+		bool ready2go{true};
+		for(auto& check : settings.checks)
+			ready2go &= check->check();
 
 		if(ready2go)
 		 {

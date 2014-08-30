@@ -4,10 +4,11 @@
 
 #include <QtDBus>
 
-class CheckedUnits : public Collection<Unit>
+class CheckedUnits : public CheckableCollection<Unit>
 {
 	public:
 		virtual bool check() override;
+		virtual void loadSettings(Settings& s) override;
 		
 	private:
 		QDBusInterface iface{"org.freedesktop.systemd1", 

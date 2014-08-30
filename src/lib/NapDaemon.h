@@ -2,7 +2,7 @@
 #include <QTimer>
 
 #include "PowerManager.h"
-#include "Setup.h"
+#include "Settings.h"
 
 class NapDaemon: public QObject
 {

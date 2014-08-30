@@ -7,23 +7,23 @@
 QT       += core dbus
 
 QT       -= gui
-CONFIG += c++11
+
+QMAKE_CXXFLAGS += -std=c++14
 
 TARGET = napd
 TEMPLATE = lib
 DESTDIR = $$PWD/../../output
 SOURCES += \
     CheckedProcesses.cpp \
-    Setup.cpp \
     CustomChecks.cpp \
     CheckedUnits.cpp \
     PowerManager.cpp \
     ProcessHandler.cpp \
-    NapDaemon.cpp
+    NapDaemon.cpp \
+    Settings.cpp
 
 HEADERS +=\
     CheckedProcesses.h \
-    Setup.h \
     Settings.h \
     CustomChecks.h \
     checkable/Checkable.h \

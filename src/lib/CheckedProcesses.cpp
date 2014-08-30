@@ -10,6 +10,39 @@
 #include <algorithm>
 #include "NotReadyException.h"
 
+#include <QSettings>
+#include <QDir>
+#include <QFileInfo>
+#include <string>
+#include "Settings.h"
+
+bool isNumeric(QString s)
+{
+	return std::all_of(s.begin(), s.end(), 
+					   [] (QChar& c) { return c.isDigit();});
+}
+
+void CheckedProcesses::find_process(QString name)
+{
+	QDir dir("/proc");
+	for(QFileInfo& procfile : dir.entryInfoList())
+	{
+		if(procfile.isDir() && isNumeric(procfile.baseName()))
+		{
+			QFile f(procfile.filePath() + "/exe");
+			if(f.exists())
+			{
+				QString exe = f.readLink();
+				qDebug() << "Executable" << exe.split('/', QString::SkipEmptyParts).last();
+				//f.open(QIODevice::ReadOnly);
+				//QString s(f.readAll().constData());
+				//qDebug() << "Path: " << f.fileName() << "\nString " << s;
+				
+			}
+		}
+	}
+}
+
 //TODO redo this with qt
 pid_t proc_find(const char* name) 
 {
@@ -65,4 +98,33 @@ bool CheckedProcesses::check()
 		if(!val) throw NotReady(proc.timeout);
 		return val; 
 	});
+}
+
+
+void CheckedProcesses::loadSettings(Settings& s)
+{
+	QDir dir("/etc/napd/processes.d");
+	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+	
+	for(QFileInfo& file : dir.entryInfoList())
+	{
+		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
+		std::string name; 
+		uint32_t timeout = s.defaultTimeout;
+		
+		// Mandatory
+		if(set.contains("Process/ProcessName"))
+			name = set.value("Process/ProcessName").toString().toStdString();
+		else
+		{
+			qWarning() << "Invalid process file : " << file.absoluteFilePath();
+			continue;
+		}
+		
+		// Facultative
+		if(set.contains("Process/Timeout"))
+			timeout = set.value("Process/Timeout").toUInt();
+		
+		this->elements.emplace_back(name, timeout);
+	}
 }

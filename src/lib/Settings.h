@@ -5,16 +5,19 @@
 #include "CheckedUnits.h"
 
 #include <cinttypes>
+#include <memory>
 
 struct Settings
 {
-	CheckedProcesses checkedProcesses;
-	CheckedUnits checkedUnits;
-	CustomChecks customChecks;
-	
-	uint32_t defaultTimeout{60};
-	
-	// Custom checks
-	std::string defaultUser{};
-	int defaultReturnCode{};
+		Settings();
+		
+		
+		std::vector<std::unique_ptr<CheckableCollectionInterface>> checks;
+		
+		// Default data
+		uint32_t defaultTimeout{60};
+		
+		// Custom checks
+		std::string defaultUser{};
+		int defaultReturnCode{};
 };

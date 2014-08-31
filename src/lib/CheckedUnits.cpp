@@ -4,28 +4,27 @@
 #include <QSettings>
 #include <QDir>
 #include <QFileInfo>
-#include <string>
 #include "Settings.h"
 
-bool CheckedUnits::check()
+bool CheckedUnits::check() const
 {
-	return std::none_of(std::begin(elements),
-						std::end(elements),
-						[&] (Unit& unit)
+	return std::none_of(elements.cbegin(),
+						elements.cend(),
+						[&] (const Unit& unit)
 	{
-		QDBusReply<QString> rep = iface.call("GetUnit", unit.name.c_str());
+		const QDBusReply<QString> rep{iface->call("GetUnit", 
+												  unit.name.toLatin1().constData())};
 		
 		if(!rep.isValid())
 			return false;
 		
-		std::string obj = rep.value().toStdString();
+		const QDBusInterface in{"org.freedesktop.systemd1", 
+								rep.value(), 
+								"org.freedesktop.systemd1.Unit", 
+								QDBusConnection::systemBus()};
 		
-		QDBusInterface in{"org.freedesktop.systemd1", 
-						  QString::fromStdString(obj), 
-						  "org.freedesktop.systemd1.Unit", 
-						  QDBusConnection::systemBus()};
+		const bool val{in.property("SubState").toString() == "Running"};
 		
-		bool val = in.property("SubState").toString() == "Running";
 		if(val)
 			throw NotReady(unit.timeout);
 		
@@ -33,20 +32,20 @@ bool CheckedUnits::check()
 	});
 }
 
-void CheckedUnits::loadSettings(Settings& s)
+void CheckedUnits::loadSettings(const Settings& s)
 {
-	QDir dir("/etc/napd/units.d");
+	QDir dir{"/etc/napd/units.d"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())
 	{
-		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
-		uint32_t timeout = s.defaultTimeout;
-		std::string name;
+		const QSettings set{file.absoluteFilePath(), QSettings::IniFormat};
+		uint32_t timeout{s.defaultTimeout};
+		QString name;
 		
 		// Mandatory
 		if(set.contains("Unit/UnitName"))
-			name = set.value("Unit/UnitName").toString().toStdString();
+			name = set.value("Unit/UnitName").toString();
 		else
 		{
 			qWarning() << "Invalid unit file : " << file.absoluteFilePath();
@@ -58,6 +57,7 @@ void CheckedUnits::loadSettings(Settings& s)
 			timeout = set.value("Unit/Timeout").toUInt();
 		
 		
-		this->elements.emplace_back(name, timeout);
+		this->elements.emplace_back(std::move(name), 
+									timeout);
 	}
 }

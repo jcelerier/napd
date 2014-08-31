@@ -1,14 +1,12 @@
 #pragma once
 #include <QProcess>
 
-#include <pwd.h>
-#include <sys/types.h>
-
+struct passwd;
 class ProcessHandler : public QProcess
 {
 		Q_OBJECT
 	public:
-		ProcessHandler(std::string username);
+		ProcessHandler(const QString& username);
 
 	protected:
 		void setupChildProcess();

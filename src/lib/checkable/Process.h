@@ -1,14 +1,35 @@
 #pragma once
 #include "Checkable.h"
-#include <string>
+#include <QString>
+
+template<typename T>
+struct Facultative
+{
+	bool isSet{};
+	T val;
+	
+	const T& operator()() const
+	{
+		return val;
+	}
+	
+	void set(const T& t)
+	{
+		isSet = true;
+		val = t;
+	}
+};
+
+using FacultativeString = Facultative<QString>;
 
 struct Process : public Checkable
 {
-		Process(std::string n, int t):
-			Checkable(t),
-			name(n)
+		Process(uint32_t t):
+			Checkable{t}
 		{
 		}
 		
-		std::string name;
+		FacultativeString path;
+		FacultativeString basename;
+		FacultativeString cmdline;
 };

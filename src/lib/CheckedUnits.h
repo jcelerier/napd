@@ -7,13 +7,23 @@
 class CheckedUnits : public CheckableCollection<Unit>
 {
 	public:
-		virtual bool check() override;
-		virtual void loadSettings(Settings& s) override;
+		CheckedUnits():
+			iface{new QDBusInterface{
+				  "org.freedesktop.systemd1", 
+				  "/org/freedesktop/systemd1", 
+				  "org.freedesktop.systemd1.Manager", 
+				  QDBusConnection::systemBus()}}
+		{
+			if (!iface->isValid()) 
+			{
+				throw std::runtime_error(qPrintable(QDBusConnection::systemBus().lastError().message()));
+			}
+		}
+
+		virtual bool check() const override;
+		virtual void loadSettings(const Settings& s) override;
 		
 	private:
-		QDBusInterface iface{"org.freedesktop.systemd1", 
-							 "/org/freedesktop/systemd1", 
-							 "org.freedesktop.systemd1.Manager", 
-							 QDBusConnection::systemBus()};
+		QDBusInterface* iface;
 };
 

@@ -6,12 +6,9 @@ class PowerManager
 {
 	public:
 		PowerManager();
-		void suspend();
-		void poweroff();
+		void suspend() const;
+		void poweroff() const;
 		
 	private:
-		QDBusInterface iface{"org.freedesktop.login1", 
-							 "/org/freedesktop/login1", 
-							 "org.freedesktop.login1.Manager", 
-							 QDBusConnection::systemBus()};
+		QDBusInterface* iface;
 };

@@ -1,130 +1,135 @@
 #include "CheckedProcesses.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/types.h>
-
 #include <algorithm>
 #include "NotReadyException.h"
 
 #include <QSettings>
 #include <QDir>
 #include <QFileInfo>
-#include <string>
 #include "Settings.h"
 
 bool isNumeric(QString s)
 {
-	return std::all_of(s.begin(), s.end(), 
-					   [] (QChar& c) { return c.isDigit();});
+	return std::all_of(s.cbegin(), s.cend(), 
+					   [] (const QChar& c) { return c.isDigit();});
 }
 
-void CheckedProcesses::find_process(QString name)
+bool CheckedProcesses::findByBasename(const QString& basename)
 {
-	QDir dir("/proc");
-	for(QFileInfo& procfile : dir.entryInfoList())
+	const QDir dir{"/proc"};
+	
+	for(const QFileInfo& procfile : dir.entryInfoList(QDir::Dirs))
 	{
-		if(procfile.isDir() && isNumeric(procfile.baseName()))
+		if(isNumeric(procfile.baseName()))
 		{
-			QFile f(procfile.filePath() + "/exe");
-			if(f.exists())
+			const QString filename{procfile.filePath() + "/exe"};
+			if(QFile::exists(filename))
 			{
-				QString exe = f.readLink();
-				qDebug() << "Executable" << exe.split('/', QString::SkipEmptyParts).last();
-				//f.open(QIODevice::ReadOnly);
-				//QString s(f.readAll().constData());
-				//qDebug() << "Path: " << f.fileName() << "\nString " << s;
+				const QFile exef{filename};
+				if(basename == exef.readLink().split('/', QString::SkipEmptyParts).last())
+					return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+bool CheckedProcesses::findByCmdline(const QString& cmdline)
+{
+	const QDir dir{"/proc"};
+	
+	for(const QFileInfo& procfile : dir.entryInfoList(QDir::Dirs))
+	{
+		if(isNumeric(procfile.baseName()))
+		{
+			const QString filename{procfile.filePath() + "/cmdline"};
+			if(QFile::exists(filename))
+			{
+				QFile cmdf{filename};
+				cmdf.open(QIODevice::ReadOnly);
 				
+				const QString s{cmdf.readAll().constData()};
+				
+				if(s == cmdline)
+					return true;
 			}
 		}
 	}
+	
+	return false;
 }
 
-//TODO redo this with qt
-pid_t proc_find(const char* name) 
+bool CheckedProcesses::findByPath(const QString& path)
 {
-	DIR* dir;
-	struct dirent* ent;
-	char* endptr;
-	char buf[512];
+	const QDir dir{"/proc"};
 	
-	if (!(dir = opendir("/proc"))) {
-		perror("can't open /proc");
-		return -1;
-	}
-	
-	while((ent = readdir(dir)) != NULL) {
-		/* if endptr is not a null character, the directory is not
-		 * entirely numeric, so ignore it */
-		long lpid = strtol(ent->d_name, &endptr, 10);
-		if (*endptr != '\0') {
-			continue;
-		}
-		
-		/* try to open the cmdline file */
-		snprintf(buf, sizeof(buf), "/proc/%ld/cmdline", lpid);
-		FILE* fp = fopen(buf, "r");
-		
-		if (fp) {
-			if (fgets(buf, sizeof(buf), fp) != NULL) {
-				/* check the first token in the file, the program name */
-				char* first = strtok(buf, " ");
-				if (!strcmp(first, name)) {
-					fclose(fp);
-					closedir(dir);
-					return (pid_t)lpid;
-				}
+	for(const QFileInfo& procfile : dir.entryInfoList(QDir::Dirs))
+	{
+		if(isNumeric(procfile.baseName()))
+		{
+			const QString filename{procfile.filePath() + "/exe"};
+			if(QFile::exists(filename))
+			{
+				const QFile exef{filename};
+				if(path == exef.readLink())
+					return true;
 			}
-			fclose(fp);
 		}
-		
 	}
 	
-	closedir(dir);
-	return -1;
+	return false;
 }
 
-bool CheckedProcesses::check()
+bool CheckedProcesses::check() const
 {
-	return std::all_of(std::begin(elements),
-						std::end(elements),
-						[] (Process& proc) 
+	return std::all_of(elements.cbegin(),
+					   elements.cend(),
+					   [] (const Process& proc) 
 	{ 
-		bool val = proc_find(proc.name.c_str()) == -1;
+		bool val{};
+		if(proc.path.isSet)
+			val |= findByPath(proc.path());
 		
-		if(!val) throw NotReady(proc.timeout);
-		return val; 
+		if(proc.basename.isSet)
+			val |= findByBasename(proc.basename());
+		
+		if(proc.cmdline.isSet)
+			val |= findByCmdline(proc.cmdline());
+		
+		if(val) 
+			throw NotReady(proc.timeout);
+		
+		return !val;
 	});
 }
 
 
-void CheckedProcesses::loadSettings(Settings& s)
+void CheckedProcesses::loadSettings(const Settings& s)
 {
-	QDir dir("/etc/napd/processes.d");
+	QDir dir{"/etc/napd/processes.d"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())
 	{
-		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
-		std::string name; 
-		uint32_t timeout = s.defaultTimeout;
+		const QSettings settingsFile{file.absoluteFilePath(), QSettings::IniFormat};
+		uint32_t timeout{s.defaultTimeout};
 		
-		// Mandatory
-		if(set.contains("Process/ProcessName"))
-			name = set.value("Process/ProcessName").toString().toStdString();
-		else
-		{
-			qWarning() << "Invalid process file : " << file.absoluteFilePath();
-			continue;
-		}
+		if(settingsFile.contains("Process/Timeout"))
+			timeout = settingsFile.value("Process/Timeout").toUInt();
 		
-		// Facultative
-		if(set.contains("Process/Timeout"))
-			timeout = set.value("Process/Timeout").toUInt();
+		Process p{timeout};
 		
-		this->elements.emplace_back(name, timeout);
+		if(settingsFile.contains("Process/MatchingPath"))
+			p.path.set(settingsFile.value("Process/MatchingPath").toString());
+		
+		if(settingsFile.contains("Process/MatchingBasename"))
+			p.basename.set(settingsFile.value("Process/MatchingBasename").toString());
+					
+		if(settingsFile.contains("Process/MatchingCmdline"))
+			p.cmdline.set(settingsFile.value("Process/MatchingCmdline").toString());
+		
+		
+		this->elements.push_back(p);
 	}
 }

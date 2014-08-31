@@ -1,11 +1,12 @@
 #pragma once
+#include <cinttypes>
 
 struct Checkable
 {
-		Checkable(int t):
-			timeout(t)
+		Checkable(uint32_t t):
+			timeout{t}
 		{
 		}
 
-		int timeout; // in seconds
+		const uint32_t timeout; // in seconds
 };

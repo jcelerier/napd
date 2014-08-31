@@ -8,7 +8,7 @@ class NapDaemon: public QObject
 {
 		Q_OBJECT
 	public:
-		NapDaemon(QObject* parent);
+		NapDaemon(QObject*);
 
 	public slots:
 		void performChecks();

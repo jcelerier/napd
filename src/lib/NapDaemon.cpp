@@ -1,8 +1,8 @@
 #include "NapDaemon.h"
 #include "NotReadyException.h"
 
-NapDaemon::NapDaemon(QObject* parent):
-	QObject(parent)
+NapDaemon::NapDaemon(QObject* pobj):
+	QObject{pobj}
 {
 	connect(&timer, &QTimer::timeout, 
 			this, &NapDaemon::performChecks);
@@ -15,7 +15,7 @@ void NapDaemon::performChecks()
 	try
 	{
 		bool ready2go{true};
-		for(auto& check : settings.checks)
+		for(const auto& check : settings.checks)
 			ready2go &= check->check();
 
 		if(ready2go)

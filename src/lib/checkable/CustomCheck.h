@@ -1,22 +1,22 @@
 #pragma once
 #include "Checkable.h"
-#include <string>
+#include <QString>
 
 struct CustomCheck: public Checkable
 {
-	CustomCheck(std::string e, 
-				std::string u,
+	CustomCheck(QString&& e, 
+				QString&& u,
 				int eq,
-				int t):
-		Checkable(t),
-		exec(e),
-		user(u),
-		mustEqual(eq)
+				uint32_t t):
+		Checkable{t},
+		exec{e},
+		user{u},
+		mustEqual{eq}
 	{
 		
 	}
 	
-	std::string exec;
-	std::string user;
-	int mustEqual{0};
+	const QString exec;
+	const QString user;
+	const int mustEqual{};
 };

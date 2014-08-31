@@ -18,6 +18,6 @@ struct Settings
 		uint32_t defaultTimeout{60};
 		
 		// Custom checks
-		std::string defaultUser{};
+		QString defaultUser{};
 		int defaultReturnCode{};
 };

@@ -13,15 +13,15 @@ using namespace std;
 Settings::Settings()
 {
 	// Load base settings
-	QSettings set("/etc/napd/napd.conf");
+	const QSettings settingsFile{"/etc/napd/napd.conf"};
 	
-	if(set.contains("napd/DefaultTimeout"))
-		defaultTimeout = set.value("napd/DefaultTimeout").toUInt();
+	if(settingsFile.contains("napd/DefaultTimeout"))
+		defaultTimeout = settingsFile.value("napd/DefaultTimeout").toUInt();
 	
-	if(set.contains("napd/DefaultUser"))
-		defaultUser = set.value("napd/DefaultUser").toString().toStdString();
+	if(settingsFile.contains("napd/DefaultUser"))
+		defaultUser = settingsFile.value("napd/DefaultUser").toString();
 	else
-		defaultUser = std::string(getpwuid(getuid())->pw_name);
+		defaultUser = QString(getpwuid(getuid())->pw_name);
 	
 
 	// Load per-check settings

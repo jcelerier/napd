@@ -1,14 +1,15 @@
 #pragma once
 #include <exception>
+#include <cinttypes>
 
 class NotReady : public std::exception
 {
 	public:
-		NotReady(int t):
-			std::exception(),
-			timeout(t)
+		NotReady(uint32_t t):
+			std::exception{},
+			timeout{t}
 		{
 		}
 		
-		int timeout{};
+		uint32_t timeout{};
 };

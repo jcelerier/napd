@@ -7,10 +7,12 @@ class QString;
 class CheckedProcesses : public CheckableCollection<Process>
 {
 	public:
-		virtual bool check() override;
-		virtual void loadSettings(Settings& s) override;
+		virtual bool check() const override;
+		virtual void loadSettings(const Settings& s) override;
 		
 	private:
-		void find_process(QString name);
+		static bool findByCmdline(const QString& cmdline);
+		static bool findByPath(const QString& path);
+		static bool findByBasename(const QString& basename);
 };
 

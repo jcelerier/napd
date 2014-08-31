@@ -1,21 +1,26 @@
 #include "PowerManager.h"
 
-PowerManager::PowerManager()
+PowerManager::PowerManager():
+	iface(new QDBusInterface{
+		  "org.freedesktop.login1", 
+		  "/org/freedesktop/login1", 
+		  "org.freedesktop.login1.Manager", 
+		  QDBusConnection::systemBus()})
 {
 	if (!QDBusConnection::systemBus().isConnected()) 
 	{
 		throw std::runtime_error("Could not connect to dbus");
 	}
 	
-	if (!iface.isValid()) 
+	if (!iface->isValid()) 
 	{
 		throw std::runtime_error(qPrintable(QDBusConnection::systemBus().lastError().message()));
 	}
 }
 
-void PowerManager::suspend()
+void PowerManager::suspend() const
 {
-	QDBusReply<QString> reply = iface.call("CanSuspend");
+	const QDBusReply<QString> reply{iface->call("CanSuspend")};
 	
 	if (reply.isValid()) 
 	{
@@ -25,7 +30,7 @@ void PowerManager::suspend()
 			return;
 		}
 		
-		QDBusReply<void> rep = iface.call("Suspend", false);
+		const QDBusReply<void> rep{iface->call("Suspend", false)};
 		
 		if(!reply.isValid())
 			qWarning() << "Reply error: " << qPrintable(rep.error().message());

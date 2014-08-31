@@ -7,48 +7,47 @@
 #include <QSettings>
 #include <QDir>
 #include <QFileInfo>
-#include <string>
 
-bool CustomChecks::check()
+bool CustomChecks::check() const
 {	
-	return  std::all_of(std::begin(elements),
-						 std::end(elements),
-						 [] (CustomCheck& check)
+	return  std::all_of(elements.cbegin(),
+						elements.cend(),
+						[] (const CustomCheck& customCheck)
 	{
-		ProcessHandler p(check.user);
+		ProcessHandler p{customCheck.user};
 		p.setProgram("bash");
-		p.setArguments({"-c", QString("'%1'").arg(QString::fromStdString(check.exec))});
+		p.setArguments({"-c", QString("'%1'").arg(customCheck.exec)});
 		
 		p.start();
 		p.waitForStarted();
 		p.waitForFinished();
 		
-		bool val = p.exitCode() == check.mustEqual;
+		const bool val{p.exitCode() == customCheck.mustEqual};
 		
 		if(!val)
-			throw NotReady(check.timeout);
+			throw NotReady(customCheck.timeout);
 		
-		return p.exitCode() == check.mustEqual;
+		return p.exitCode() == customCheck.mustEqual;
 	});
 }
 
-void CustomChecks::loadSettings(Settings& s)
+void CustomChecks::loadSettings(const Settings& s)
 {
-	QDir dir("/etc/napd/checks.d");
+	QDir dir{"/etc/napd/checks.d"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())
 	{
-		QSettings set(file.absoluteFilePath(), QSettings::IniFormat);
+		const QSettings settingsFile{file.absoluteFilePath(), QSettings::IniFormat};
 		
-		std::string exec;
-		uint32_t timeout = s.defaultTimeout;
-		std::string user = s.defaultUser;
-		int mustEqual = s.defaultReturnCode;
+		QString exec;
+		uint32_t timeout{s.defaultTimeout};
+		QString user{s.defaultUser};
+		int mustEqual{s.defaultReturnCode};
 		
 		// Mandatory
-		if(set.contains("Check/Exec"))
-			exec = set.value("Check/Exec").toString().toStdString();
+		if(settingsFile.contains("Check/Exec"))
+			exec = settingsFile.value("Check/Exec").toString();
 		else
 		{
 			qWarning() << "Invalid unit file : " << file.absoluteFilePath();
@@ -56,14 +55,17 @@ void CustomChecks::loadSettings(Settings& s)
 		}
 		
 		// Facultative
-		if(set.contains("Check/Timeout"))
-			timeout = set.value("Check/Timeout").toUInt();
-		if(set.contains("Check/MustEqual"))
-			timeout = set.value("Check/MustEqual").toInt();
-		if(set.contains("Check/AsUser"))
-			user = set.value("Check/AsUser").toString().toStdString();
+		if(settingsFile.contains("Check/Timeout"))
+			timeout = settingsFile.value("Check/Timeout").toUInt();
+		if(settingsFile.contains("Check/MustEqual"))
+			timeout = settingsFile.value("Check/MustEqual").toInt();
+		if(settingsFile.contains("Check/AsUser"))
+			user = settingsFile.value("Check/AsUser").toString();
 		
 		
-		this->elements.emplace_back(exec, user, mustEqual, timeout);
+		this->elements.emplace_back(std::move(exec),
+									std::move(user), 
+									mustEqual, 
+									timeout);
 	}
 }

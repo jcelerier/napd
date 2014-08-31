@@ -1,14 +1,14 @@
 #pragma once
 #include "Checkable.h"
-#include <string>
+#include <QString>
 
 struct Unit : public Checkable
 {
-		Unit(std::string n, int t):
-			Checkable(t),
-			name(n)
+		Unit(QString&& n, uint32_t t):
+			Checkable{t},
+			name{n}
 		{
 		}
 		
-		std::string name;
+		const QString name;
 };

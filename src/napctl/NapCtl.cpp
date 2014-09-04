@@ -26,7 +26,11 @@ NapCtl::NapCtl(const QStringList& args):
 		{
 			case 2:
 			{
-				PIDInterface.call("add", PID);
+				QDBusError rep = PIDInterface.call("add", PID);
+				
+				if(rep.type() != QDBusError::NoError)
+					qWarning("Error (%s) : %s", rep.errorString(rep.type()).toLatin1().constData(), rep.message().toLatin1().constData());
+				
 				break;
 			}
 			case 3:
@@ -37,7 +41,10 @@ NapCtl::NapCtl(const QStringList& args):
 				if(!Timeok)
 					throw std::runtime_error("Bad timeout");
 				
-				PIDInterface.call("add", PID, Time);
+				QDBusError rep = PIDInterface.call("add", PID, Time);
+				
+				if(rep.type() != QDBusError::NoError)
+					qWarning("Error (%s) : %s", rep.errorString(rep.type()).toLatin1().constData(), rep.message().toLatin1().constData());
 				
 				break;
 			}

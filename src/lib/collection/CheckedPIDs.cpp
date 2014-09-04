@@ -5,16 +5,20 @@
 #include "NotReadyException.h"
 #include "DBusManager.h"
 
-CheckedPIDs::CheckedPIDs():
+using namespace std;
+
+CheckedPIDs::CheckedPIDs(uint32_t def_timeout):
 	QObject{},
-	CheckableCollection<PID>{}
+	QDBusContext{},
+	CheckableCollection<PID>{},
+	defaultTimeout{def_timeout}
 {
 	DBusManager::registerObject("/PID", this);
 }
 
 bool CheckedPIDs::check() const
 {
-	return std::all_of(elements.cbegin(),
+	return all_of(elements.cbegin(),
 					   elements.cend(),
 					   [&] (const PID& p)
 	{
@@ -26,6 +30,37 @@ bool CheckedPIDs::check() const
 	});
 }
 
-void CheckedPIDs::load(const Settings& s)
+void CheckedPIDs::load(const Settings& )
 {
+}
+
+void CheckedPIDs::add(quint32 pid)
+{
+	if(find(elements.begin(), elements.end(), pid) == elements.end())
+	{
+		elements.push_back(PID(pid, defaultTimeout));
+		return;
+	}
+	
+	sendErrorReply(QDBusError::Failed, "PID is already taken");
+}
+
+void CheckedPIDs::add(quint32 pid, quint32 timeout)
+{
+	if(find(elements.begin(), elements.end(), pid) == elements.end())
+	{
+		elements.push_back(PID(pid, timeout));
+		return;
+	}
+	
+	sendErrorReply(QDBusError::Failed, "PID is already taken");
+}
+
+void CheckedPIDs::remove(quint32 pid)
+{
+	auto it = std::remove(begin(elements), 
+						  end(elements), 
+						  pid );
+	
+	elements.erase(it, end(elements));
 }

@@ -42,7 +42,7 @@ Settings::Settings()
 	checks.emplace_back(std::make_unique<CheckedProcesses>());
 	checks.emplace_back(std::make_unique<CheckedUnits>());
 	checks.emplace_back(std::make_unique<CustomChecks>());
-	checks.emplace_back(std::make_unique<CheckedPIDs>());
+	checks.emplace_back(std::make_unique<CheckedPIDs>(defaultTimeout));
 	
 	for(auto& check : checks)
 		check->load(*this);

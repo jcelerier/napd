@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QDir>
 #include <QFileInfo>
+#include <QDebug>
 
 bool CustomChecks::check() const
 {	
@@ -27,13 +28,13 @@ bool CustomChecks::check() const
 		if(!val)
 			throw NotReady(customCheck.timeout);
 		
-		return p.exitCode() == customCheck.mustEqual;
+		return val;
 	});
 }
 
-void CustomChecks::loadSettings(const Settings& s)
+void CustomChecks::load(const Settings& s)
 {
-	QDir dir{"/etc/napd/checks.d"};
+	QDir dir{"/etc/napd/checks.d/active"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())

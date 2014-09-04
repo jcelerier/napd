@@ -100,14 +100,14 @@ bool CheckedProcesses::check() const
 		if(val) 
 			throw NotReady(proc.timeout);
 		
-		return !val;
+		return true;
 	});
 }
 
 
-void CheckedProcesses::loadSettings(const Settings& s)
+void CheckedProcesses::load(const Settings& s)
 {
-	QDir dir{"/etc/napd/processes.d"};
+	QDir dir{"/etc/napd/processes.d/active"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())

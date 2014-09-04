@@ -13,7 +13,7 @@ class CheckableCollectionInterface
 		virtual bool check() const = 0;
 		
 		// Loads settings from disk
-		virtual void loadSettings(const Settings& s) = 0;
+		virtual void load(const Settings& s) = 0;
 };
 
 template<typename T>

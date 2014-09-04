@@ -21,7 +21,7 @@ class CheckedUnits : public CheckableCollection<Unit>
 		}
 
 		virtual bool check() const override;
-		virtual void loadSettings(const Settings& s) override;
+		virtual void load(const Settings& s) override;
 		
 	private:
 		QDBusInterface* iface;

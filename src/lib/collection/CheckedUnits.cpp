@@ -8,9 +8,9 @@
 
 bool CheckedUnits::check() const
 {
-	return std::none_of(elements.cbegin(),
-						elements.cend(),
-						[&] (const Unit& unit)
+	return std::all_of(elements.cbegin(),
+					   elements.cend(),
+					   [&] (const Unit& unit)
 	{
 		const QDBusReply<QString> rep{iface->call("GetUnit", 
 												  unit.name.toLatin1().constData())};
@@ -28,13 +28,13 @@ bool CheckedUnits::check() const
 		if(val)
 			throw NotReady(unit.timeout);
 		
-		return val;
+		return true;
 	});
 }
 
-void CheckedUnits::loadSettings(const Settings& s)
+void CheckedUnits::load(const Settings& s)
 {
-	QDir dir{"/etc/napd/units.d"};
+	QDir dir{"/etc/napd/units.d/active"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())

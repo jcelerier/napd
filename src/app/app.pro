@@ -1,5 +1,8 @@
 TEMPLATE = app
-CONFIG += console c++11
+
+include (../Common.pri)
+
+CONFIG += console
 CONFIG -= app_bundle
 QT += core dbus
 SOURCES += main.cpp

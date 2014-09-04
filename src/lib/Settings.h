@@ -1,22 +1,26 @@
 #pragma once
-
-#include "CheckedProcesses.h"
-#include "CustomChecks.h"
-#include "CheckedUnits.h"
-
 #include <cinttypes>
 #include <memory>
+#include "collection/Collection.h"
 
-struct Settings
+#include <QObject>
+
+class Settings : public QObject
 {
-		Settings();
+		Q_OBJECT
+
+	public slots:
+		void enable(QString s);
+		void disable(QString s);
 		
+	public:
+		Settings();
 		
 		std::vector<std::unique_ptr<CheckableCollectionInterface>> checks;
 		
 		// Default data
 		uint32_t defaultTimeout{60};
-		
+
 		// Custom checks
 		QString defaultUser{};
 		int defaultReturnCode{};

@@ -8,7 +8,7 @@ class CheckedProcesses : public CheckableCollection<Process>
 {
 	public:
 		virtual bool check() const override;
-		virtual void loadSettings(const Settings& s) override;
+		virtual void load(const Settings& s) override;
 		
 	private:
 		static bool findByCmdline(const QString& cmdline);

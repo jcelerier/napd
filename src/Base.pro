@@ -1,5 +1,10 @@
 TEMPLATE = subdirs
+
+
+
+
 SUBDIRS = lib \
-		  app
+		  app \
+		  napctl
 
 CONFIG += ordered

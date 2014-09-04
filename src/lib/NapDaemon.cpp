@@ -1,6 +1,11 @@
 #include "NapDaemon.h"
 #include "NotReadyException.h"
 
+#include "collection/CheckedProcesses.h"
+#include "collection/CustomChecks.h"
+#include "collection/CheckedUnits.h"
+#include "collection/CheckedPIDs.h"
+
 NapDaemon::NapDaemon(QObject* pobj):
 	QObject{pobj}
 {

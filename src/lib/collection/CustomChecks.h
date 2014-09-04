@@ -6,5 +6,5 @@ class CustomChecks : public CheckableCollection<CustomCheck>
 {
 	public:
 		virtual bool check() const override;
-		virtual void loadSettings(const Settings& s) override;
+		virtual void load(const Settings& s) override;
 };

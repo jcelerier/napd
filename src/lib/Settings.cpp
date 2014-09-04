@@ -4,11 +4,25 @@
 #include <unistd.h>
 
 #include "Settings.h"
-#include "CheckedProcesses.h"
-#include "CheckedUnits.h"
-#include "CustomChecks.h"
 
 using namespace std;
+
+#include "collection/CheckedProcesses.h"
+#include "collection/CustomChecks.h"
+#include "collection/CheckedUnits.h"
+#include "collection/CheckedPIDs.h"
+
+#include "DBusManager.h"
+
+void Settings::enable(QString s)
+{
+	qWarning() << "TODO";
+}
+
+void Settings::disable(QString s)
+{
+	qWarning() << "TODO";
+}
 
 Settings::Settings()
 {
@@ -28,7 +42,10 @@ Settings::Settings()
 	checks.emplace_back(std::make_unique<CheckedProcesses>());
 	checks.emplace_back(std::make_unique<CheckedUnits>());
 	checks.emplace_back(std::make_unique<CustomChecks>());
+	checks.emplace_back(std::make_unique<CheckedPIDs>());
 	
 	for(auto& check : checks)
-		check->loadSettings(*this);
+		check->load(*this);
+	
+	DBusManager::registerObject("/Settings", this);
 }

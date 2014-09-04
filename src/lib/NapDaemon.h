@@ -3,6 +3,7 @@
 
 #include "PowerManager.h"
 #include "Settings.h"
+#include "DBusManager.h"
 
 class NapDaemon: public QObject
 {
@@ -14,6 +15,7 @@ class NapDaemon: public QObject
 		void performChecks();
 		
 	private:
+		DBusManager dbus;
 		Settings settings;
 		PowerManager power;
 		QTimer timer{nullptr};

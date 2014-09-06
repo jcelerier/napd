@@ -16,10 +16,8 @@ bool CustomChecks::check() const
 						[] (const CustomCheck& customCheck)
 	{
 		ProcessHandler p{customCheck.user};
-		p.setProgram("bash");
-		p.setArguments({"-c", QString("'%1'").arg(customCheck.exec)});
 		
-		p.start();
+		p.start("bash", {"-c", QString("'%1'").arg(customCheck.exec)});
 		p.waitForStarted();
 		p.waitForFinished();
 		

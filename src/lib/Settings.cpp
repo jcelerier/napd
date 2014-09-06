@@ -39,10 +39,10 @@ Settings::Settings()
 	
 
 	// Load per-check settings
-	checks.emplace_back(std::make_unique<CheckedProcesses>());
-	checks.emplace_back(std::make_unique<CheckedUnits>());
-	checks.emplace_back(std::make_unique<CustomChecks>());
-	checks.emplace_back(std::make_unique<CheckedPIDs>(defaultTimeout));
+	checks.emplace_back(std::unique_ptr<CheckedProcesses>(new CheckedProcesses));
+	checks.emplace_back(std::unique_ptr<CheckedUnits>(new CheckedUnits));
+	checks.emplace_back(std::unique_ptr<CustomChecks>(new CustomChecks));
+	checks.emplace_back(std::unique_ptr<CheckedPIDs>(new CheckedPIDs(defaultTimeout)));
 	
 	for(auto& check : checks)
 		check->load(*this);

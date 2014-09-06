@@ -20,7 +20,7 @@ PowerManager::PowerManager():
 
 void PowerManager::suspend() const
 {
-	const QDBusReply<QString> reply{iface->call("CanSuspend")};
+	QDBusReply<QString> reply{iface->call("CanSuspend")};
 	
 	if (reply.isValid()) 
 	{
@@ -30,7 +30,7 @@ void PowerManager::suspend() const
 			return;
 		}
 		
-		const QDBusReply<void> rep{iface->call("Suspend", false)};
+		QDBusReply<void> rep{iface->call("Suspend", false)};
 		
 		if(!reply.isValid())
 			qWarning() << "Reply error: " << qPrintable(rep.error().message());

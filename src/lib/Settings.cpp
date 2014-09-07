@@ -30,6 +30,9 @@ void Settings::enable(qint32 napctl_pid, QString s)
 	
 	if(!ok)
 		sendErrorReply(QDBusError::Failed, "Error while trying to enable '" + s + "'. Please check the journal.");
+	
+	for(auto& check : checks)
+		check->load(*this);
 }
 
 void Settings::disable(qint32 napctl_pid, QString s)
@@ -42,6 +45,9 @@ void Settings::disable(qint32 napctl_pid, QString s)
 	
 	if(!ok)
 		sendErrorReply(QDBusError::Failed, "Error while trying to disable '" + s + "'. Please check the journal.");
+	
+	for(auto& check : checks)
+		check->load(*this);
 }
 
 Settings::Settings():

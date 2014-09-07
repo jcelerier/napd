@@ -15,8 +15,7 @@ int main(int argc, char *argv[])
 	parser.addPositionalArgument("command",
 								 "Command to execute. Either enable, disable, add-pid, remove-pid.");
 	
-	parser.addPositionalArgument("argument", "Argument to the command.");
-	parser.addPositionalArgument("argument2", "Argument to the command.");
+	parser.addPositionalArgument("arguments", "Arguments to the command.");
 	
 	parser.process(a);
 	const QStringList args = parser.positionalArguments();

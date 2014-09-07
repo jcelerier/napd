@@ -4,14 +4,14 @@
 #include "collection/Collection.h"
 
 #include <QObject>
-
-class Settings : public QObject
+#include <QDBusContext>
+class Settings : public QObject, public QDBusContext
 {
 		Q_OBJECT
 
 	public slots:
-		void enable(QString s);
-		void disable(QString s);
+		Q_SCRIPTABLE void enable(qint32 napctl_pid, QString s);
+		Q_SCRIPTABLE void disable(qint32 napctl_pid, QString);
 		
 	public:
 		Settings();

@@ -14,17 +14,39 @@ using namespace std;
 
 #include "DBusManager.h"
 
-void Settings::enable(QString s)
+void Settings::enable(qint32 napctl_pid, QString s)
 {
-	qWarning() << "TODO";
+	// Find if the string corresponds to a file in either of the collections
+	// If not specified, check for all .process, .unit, .checks, and file with the same name and enable 'em.
+	// Example : "napctl enable vlc" will search for vlc in all folders, vlc.process in the processes.d folder, vlc.unit in the units folder, etc.
+	
+	// If yes, create symoblic link in the collection folder
+
+	bool ok{true};
+	for(auto& check : checks)
+	{
+		ok &= check->enable(napctl_pid, s);
+	}
+	
+	if(!ok)
+		sendErrorReply(QDBusError::Failed, "Error while trying to enable '" + s + "'. Please check the journal.");
 }
 
-void Settings::disable(QString s)
+void Settings::disable(qint32 napctl_pid, QString s)
 {
-	qWarning() << "TODO";
+	bool ok{true};
+	for(auto& check : checks)
+	{
+		ok &= check->disable(napctl_pid, s);
+	}
+	
+	if(!ok)
+		sendErrorReply(QDBusError::Failed, "Error while trying to disable '" + s + "'. Please check the journal.");
 }
 
-Settings::Settings()
+Settings::Settings():
+	QObject{},
+	QDBusContext{}
 {
 	// Load base settings
 	const QSettings settingsFile{"/etc/napd/napd.conf"};

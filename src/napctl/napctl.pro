@@ -19,7 +19,9 @@ TEMPLATE = app
 DESTDIR = $$PWD/../../output
 
 SOURCES += main.cpp \
-    NapCtl.cpp
+    NapCtl.cpp \
+    MessageListener.cpp
 
 HEADERS += \
-    NapCtl.h
+    NapCtl.h \
+    MessageListener.h

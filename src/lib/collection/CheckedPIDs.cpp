@@ -34,7 +34,7 @@ void CheckedPIDs::load(const Settings& )
 {
 }
 
-void CheckedPIDs::add(quint32 pid)
+void CheckedPIDs::add(pid_t , quint32 pid)
 {
 	if(find(elements.begin(), elements.end(), pid) == elements.end())
 	{
@@ -45,7 +45,7 @@ void CheckedPIDs::add(quint32 pid)
 	sendErrorReply(QDBusError::Failed, "PID is already taken");
 }
 
-void CheckedPIDs::add(quint32 pid, quint32 timeout)
+void CheckedPIDs::add(qint32 , quint32 pid, quint32 timeout)
 {
 	if(find(elements.begin(), elements.end(), pid) == elements.end())
 	{
@@ -56,7 +56,7 @@ void CheckedPIDs::add(quint32 pid, quint32 timeout)
 	sendErrorReply(QDBusError::Failed, "PID is already taken");
 }
 
-void CheckedPIDs::remove(quint32 pid)
+void CheckedPIDs::remove(qint32 , quint32 pid)
 {
 	auto it = std::remove(begin(elements), 
 						  end(elements), 

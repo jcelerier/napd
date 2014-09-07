@@ -15,10 +15,10 @@ class CheckedPIDs : public QObject, public QDBusContext, public CheckableCollect
 		virtual void load(const Settings& ) override;
 		
 	public slots:
-		Q_SCRIPTABLE void add(quint32 pid);
-		Q_SCRIPTABLE void add(quint32 pid, quint32 timeout);
+		Q_SCRIPTABLE void add(qint32 napctl_pid, quint32 pid);
+		Q_SCRIPTABLE void add(qint32 napctl_pid, quint32 pid, quint32 timeout);
 		
-		Q_SCRIPTABLE void remove(quint32 pid);
+		Q_SCRIPTABLE void remove(qint32 napctl_pid, quint32 pid);
 		
 	private:
 		uint32_t defaultTimeout;

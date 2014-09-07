@@ -34,7 +34,7 @@ bool CheckedUnits::check() const
 
 void CheckedUnits::load(const Settings& s)
 {
-	QDir dir{"/etc/napd/units.d/active"};
+	QDir dir{baseFolder + "/active"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())

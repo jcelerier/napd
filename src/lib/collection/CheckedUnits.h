@@ -8,6 +8,7 @@ class CheckedUnits : public CheckableCollection<Unit>
 {
 	public:
 		CheckedUnits():
+			CheckableCollection<Unit>{"/etc/napd/units.d", "unit"},
 			iface{new QDBusInterface{
 				  "org.freedesktop.systemd1", 
 				  "/org/freedesktop/systemd1", 

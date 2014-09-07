@@ -32,7 +32,7 @@ bool CustomChecks::check() const
 
 void CustomChecks::load(const Settings& s)
 {
-	QDir dir{"/etc/napd/checks.d/active"};
+	QDir dir{baseFolder + "/active"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())

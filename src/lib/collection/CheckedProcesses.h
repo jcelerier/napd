@@ -7,6 +7,11 @@ class QString;
 class CheckedProcesses : public CheckableCollection<Process>
 {
 	public:
+		CheckedProcesses():
+			CheckableCollection<Process>{"/etc/napd/processes.d", "process"}
+		{
+		}
+
 		virtual bool check() const override;
 		virtual void load(const Settings& s) override;
 		

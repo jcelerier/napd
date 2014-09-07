@@ -107,7 +107,7 @@ bool CheckedProcesses::check() const
 
 void CheckedProcesses::load(const Settings& s)
 {
-	QDir dir{"/etc/napd/processes.d/active"};
+	QDir dir{baseFolder + "/active"};
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	
 	for(QFileInfo& file : dir.entryInfoList())

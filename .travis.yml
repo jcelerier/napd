@@ -1,10 +1,15 @@
+dist: trusty
+sudo: required
+
 before_install:
     - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-    - sudo add-apt-repository --yes ppa:beineri/opt-qt531
+    - sudo add-apt-repository --yes ppa:beineri/opt-qt57-trusty
     - sudo apt-get update -qq
-    - sudo apt-get install -qq g++-4.8 qt53-meta-full
-    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
+    - sudo apt-get install -qq g++-6 qt57-meta-full
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
 script:
-    - source /opt/qt53/bin/qt53-env.sh
-    - qmake src/Base.pro
-    - make
+    - source $(find /opt -name 'qt*-env.sh')
+    - mkdir build 
+    - cd build 
+    - cmake ..
+    - cmake --build . -- -j2
